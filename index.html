@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tobygames — Tienda de Apps y Juegos a $1 USD</title>
+  <link rel="stylesheet" href="styles.css" /></head>
+<body>
+
+  <!-- ==================== PANTALLA DE INICIO DE SESIÓN / REGISTRO ==================== -->
+  <section id="auth-screen">
+    <div class="auth-wrapper">
+      <div class="auth-promo">
+        <div>
+          <div class="brand-logo">🎮 Toby<span>games</span></div>
+          <div style="margin-top: 28px;">
+            <span class="promo-badge">🔥 ¡TODO JUEGO A $1 DÓLAR!</span>
+            <h1>Tus aplicaciones y juegos favoritos por solo $1.00 USD</h1>
+            <p style="color: var(--text-muted); line-height: 1.5;">
+              Accede al catálogo exclusivo de Tobygames con precios únicos y pon a prueba tu suerte en nuestra ruleta de recompensas.
+            </p>
+            <ul class="promo-features">
+              <li>🎁 <strong>Bono de Bienvenida:</strong> 1 Giro Gratis en la ruleta al registrarte.</li>
+              <li>💵 <strong>Precio Único:</strong> Todo el catálogo de apps y juegos a $1 USD.</li>
+              <li>🎡 <strong>Ruleta Diaria:</strong> Gana saldo de $0.50, $1.00 o juegos completos gratis.</li>
+            </ul>
+          </div>
+        </div>
+        <div style="font-size: 0.82rem; color: var(--text-muted); line-height: 1.5;">
+          <div>¿Necesitas ayuda o soporte? Escríbenos a <a href="mailto:tobygames489@gmail.com" style="color: var(--accent); font-weight: 700; text-decoration: none;">tobygames489@gmail.com</a></div>
+          <div style="font-size: 0.78rem; margin-top: 4px;">© 2026 Tobygames Store. Todos los derechos reservados.</div>
+        </div>
+      </div>
+
+      <div class="auth-forms">
+        <div class="auth-tabs">
+          <button class="auth-tab active" id="tab-login" onclick="switchAuthTab('login')">Iniciar Sesión</button>
+          <button class="auth-tab" id="tab-register" onclick="switchAuthTab('register')">Crear Cuenta</button>
+        </div>
+
+        <!-- Formulario Login -->
+        <form id="login-form" onsubmit="handleLogin(event)">
+          <div class="form-group">
+            <label>Correo electrónico</label>
+            <input type="email" id="login-email" placeholder="usuario@gmail.com" required />
+          </div>
+          <div class="form-group">
+            <label>Contraseña</label>
+            <input type="password" id="login-pass" placeholder="••••••••" required />
+          </div>
+          <div style="display: flex; justify-content: flex-end; margin-top: -6px; margin-bottom: 10px;">
+            <button type="button" class="btn btn-outline btn-sm" style="border: none; padding: 4px 6px; color: var(--accent);" onclick="openForgotPasswordModal()">
+              🔑 ¿Olvidaste tu contraseña? Recuperar por Gmail
+            </button>
+          </div>
+          <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 4px;">Entrar a Tobygames</button>
+        </form>
+
+        <!-- Formulario Registro -->
+        <form id="register-form" class="hidden" onsubmit="handleRegister(event)">
+          <div class="form-group">
+            <label>Nombre de usuario</label>
+            <input type="text" id="reg-name" placeholder="Ej: TobyGamer99" required />
+          </div>
+          <div class="form-group">
+            <label>Correo electrónico (@gmail.com)</label>
+            <input type="email" id="reg-email" placeholder="tunombre@gmail.com" pattern="[a-zA-Z0-9._%+-]+@gmail\.com" title="Usa una dirección @gmail.com válida" required />
+          </div>
+          <div class="form-group">
+            <label>Contraseña</label>
+            <input type="password" id="reg-pass" placeholder="Mínimo 4 caracteres" minlength="4" required />
+          </div>
+          <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 8px;">
+            Registrarme y reclamar 1 Giro Gratis 🎡
+          </button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== APLICACIÓN PRINCIPAL ==================== -->
+  <section id="app-screen" class="hidden">
+    <aside class="sidebar">
+      <div>
+        <div class="brand-logo" style="font-size: 1.55rem;">🎮 Toby<span>games</span></div>
+        <nav class="nav-links">
+          <button class="nav-item active" data-view="catalog" onclick="navigate('catalog')">🛒 Catálogo ($1 USD)</button>
+          <button class="nav-item" data-view="library" onclick="navigate('library')">📚 Mi Biblioteca</button>
+          <button class="nav-item" data-view="wheel" onclick="navigate('wheel')">🎡 Ruleta de Premios</button>
+          <button class="nav-item" data-view="settings" onclick="navigate('settings')">⚙️ Configuración</button>
+          <button class="nav-item hidden" id="nav-admin" data-view="admin" onclick="navigate('admin')">🛡️ Panel Moderación</button>
+        </nav>
+      </div>
+
+      <div>
+        <div style="padding: 12px; background: var(--bg-card); border-radius: 12px; border: 1px solid var(--border); margin-bottom: 12px;">
+          <div style="font-size: 0.85rem; font-weight: 700;" id="sidebar-username">Usuario</div>
+          <span class="role-badge role-user" id="sidebar-role">Usuario</span>
+        </div>
+        <button class="btn btn-outline" style="width: 100%;" onclick="logout()">Cerrar Sesión</button>
+      </div>
+    </aside>
+
+    <div class="main-content">
+      <header class="topbar">
+        <h2 id="view-title" style="font-size: 1.25rem;">Catálogo de Juegos y Apps</h2>
+        <div class="wallet-pills">
+          <div class="pill pill-money" title="Saldo disponible">💵 $<span id="top-balance">0.00</span> USD</div>
+          <button type="button" class="btn btn-primary btn-sm" onclick="openPaypalModal()">💳 Recargar PayPal</button>
+          <div class="pill pill-spins" title="Giros de ruleta disponibles">🎡 <span id="top-spins">0</span> Giros</div>
+        </div>
+      </header>
+
+      <!-- VISTA 1: CATÁLOGO -->
+      <main id="view-catalog" class="view-container">
+        <div class="catalog-header">
+          <div class="search-bar">
+            <input type="text" id="search-input" placeholder="🔍 Buscar juego o aplicación por nombre..." oninput="renderCatalog()" />
+            <select id="category-filter" style="max-width: 180px;" onchange="renderCatalog()">
+              <option value="all">Todas las categorías</option>
+              <option value="Acción">Acción</option>
+              <option value="Aventura">Aventura</option>
+              <option value="Utilidades">Utilidades / Apps</option>
+              <option value="Indie">Indie</option>
+            </select>
+          </div>
+          <div style="font-size: 0.9rem; color: var(--text-muted);">
+            Mostrando <strong id="catalog-count">0</strong> títulos disponibles
+          </div>
+        </div>
+        <div class="games-grid" id="catalog-grid"></div>
+      </main>
+
+      <!-- VISTA 2: MI BIBLIOTECA -->
+      <main id="view-library" class="view-container hidden">
+        <p style="color: var(--text-muted); margin-bottom: 20px;">Aquí aparecen las aplicaciones y juegos que has comprado o ganado en la ruleta.</p>
+        <div class="games-grid" id="library-grid"></div>
+      </main>
+
+      <!-- VISTA 3: RULETA DE PREMIOS -->
+      <main id="view-wheel" class="view-container hidden">
+        <div class="wheel-layout">
+          <div class="wheel-box">
+            <div class="wheel-pointer"></div>
+            <canvas id="wheel-canvas" width="380" height="380"></canvas>
+          </div>
+          <div>
+            <span class="promo-badge">🎡 RULETA TOBYGAMES</span>
+            <h2 style="font-size: 1.9rem; margin-bottom: 12px;">¡Gira y gana saldo o juegos gratis!</h2>
+            <p style="color: var(--text-muted); margin-bottom: 20px; line-height: 1.5;">
+              Usa tus giros gratuitos o compra un giro adicional por <strong>$0.50 USD</strong>. Puedes ganar medio dólar, un dólar completo o un título aleatorio de la tienda.
+            </p>
+            <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px;">
+              <button class="btn btn-primary" id="spin-free-btn" onclick="spinWheel(false)">
+                🎡 Girar Gratis (<span id="wheel-spins-label">0</span>)
+              </button>
+              <button class="btn btn-outline" onclick="spinWheel(true)">
+                💵 Comprar Giro ($0.50 USD)
+              </button>
+            </div>
+            <div id="wheel-result-box" class="card-box hidden" style="border-color: var(--primary);">
+              <strong id="wheel-result-text">¡Resultado!</strong>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <!-- VISTA 4: CONFIGURACIÓN -->
+      <main id="view-settings" class="view-container hidden">
+        <div class="panel-grid">
+          <div class="card-box">
+            <h3>👤 Perfil y Seguridad</h3>
+            <form onsubmit="updateProfile(event)">
+              <div class="form-group">
+                <label>Nombre de usuario</label>
+                <input type="text" id="set-username" required />
+              </div>
+              <div class="form-group">
+                <label>Correo electrónico</label>
+                <input type="email" id="set-email" required />
+              </div>
+              <button type="submit" class="btn btn-primary">Guardar Perfil</button>
+            </form>
+
+            <div style="margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--border);">
+              <p style="color: var(--text-muted); font-size: 0.88rem; margin-bottom: 10px;">
+                Actualiza tu clave verificando primero tu contraseña actual.
+              </p>
+              <button type="button" class="btn btn-outline" onclick="openPasswordModal()">
+                🔒 Cambiar Contraseña
+              </button>
+            </div>
+          </div>
+
+          <div class="card-box">
+            <h3>💳 Recargar Saldo con PayPal</h3>
+            <p style="color: var(--text-muted); font-size: 0.88rem; margin-bottom: 14px;">
+              Añade fondos en USD a tu cuenta de Tobygames mediante PayPal para comprar juegos o giros de ruleta.
+            </p>
+            <button type="button" class="btn btn-primary" onclick="openPaypalModal()">
+              Abrir Pasarela PayPal
+            </button>
+          </div>
+
+          <div class="card-box">
+            <h3>🎨 Apariencia y Tono de la Página</h3>
+            <p style="color: var(--text-muted); font-size: 0.88rem; margin-bottom: 16px;">
+              Personaliza el esquema de color de Tobygames a tu gusto.
+            </p>
+            <div class="theme-options">
+              <button class="btn btn-outline" onclick="setTheme('default')">🟣 Cyber Morado</button>
+              <button class="btn btn-outline" onclick="setTheme('emerald')">🟢 Esmeralda Matrix</button>
+              <button class="btn btn-outline" onclick="setTheme('crimson')">🔴 Rojo Carmesí</button>
+              <button class="btn btn-outline" onclick="setTheme('light')">☀️ Claro Minimalista</button>
+            </div>
+          </div>
+
+          <div class="card-box">
+            <h3>📩 Ayuda y Soporte Técnico</h3>
+            <p style="color: var(--text-muted); font-size: 0.88rem; margin-bottom: 12px; line-height: 1.45;">
+              Si tienes inconvenientes con compras, recargas de PayPal, descargas o tu cuenta, contáctanos por correo electrónico:
+            </p>
+            <a href="mailto:tobygames489@gmail.com?subject=Soporte%20Tobygames" class="btn btn-outline">
+              ✉️ tobygames489@gmail.com
+            </a>
+          </div>
+        </div>
+      </main>
+
+      <!-- VISTA 5: PANEL DE ADMINISTRACIÓN / MODERACIÓN -->
+      <main id="view-admin" class="view-container hidden">
+        <div class="panel-grid" style="margin-bottom: 28px;">
+          <!-- Agregar Juegos / Apps -->
+          <div class="card-box">
+            <h3>➕ Publicar Juego o Aplicación</h3>
+            <form onsubmit="addNewGame(event)">
+              <div class="form-group">
+                <label>Nombre del juego / app</label>
+                <input type="text" id="new-game-title" placeholder="Ej: Cyber Runner 2077" required />
+              </div>
+              <div class="form-group">
+                <label>Categoría</label>
+                <select id="new-game-cat">
+                  <option value="Acción">Acción</option>
+                  <option value="Aventura">Aventura</option>
+                  <option value="Utilidades">Utilidades / Apps</option>
+                  <option value="Indie">Indie</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Precio ($ USD)</label>
+                <input type="number" id="new-game-price" value="1.00" step="0.50" min="0" required />
+              </div>
+              <div class="form-group">
+                <label>Imagen de Portada (archivo desde tu equipo)</label>
+                <input type="file" id="new-game-img-file" accept="image/*" />
+              </div>
+              <div class="form-group">
+                <label>O URL de Portada (opcional si subes imagen)</label>
+                <input type="url" id="new-game-img" placeholder="https://..." />
+              </div>
+              <div class="form-group">
+                <label>Archivo del Juego / App (opcional)</label>
+                <input type="file" id="new-game-file" accept=".zip,.rar,.7z,.exe,.msi,.apk,.pdf,.txt,application/zip,application/x-zip-compressed" />
+              </div>
+              <div class="form-group">
+                <label>Descripción corta</label>
+                <textarea id="new-game-desc" rows="2" placeholder="Describe el juego o aplicación..." required></textarea>
+              </div>
+              <button type="submit" class="btn btn-primary">Confirmar y Publicar en Catálogo</button>
+            </form>
+          </div>
+
+          <!-- Crear Moderador (Solo visible para el Admin Principal) -->
+          <div class="card-box" id="admin-only-mod-creator">
+            <h3>🛡️ Agregar Nuevo Moderador</h3>
+            <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 14px;">
+              Solo tú como Admin Principal puedes crear cuentas de moderadores para ayudarte a publicar y gestionar juegos.
+            </p>
+            <form onsubmit="createModerator(event)">
+              <div class="form-group">
+                <label>Nombre del moderador</label>
+                <input type="text" id="mod-name" placeholder="Nombre del mod" required />
+              </div>
+              <div class="form-group">
+                <label>Correo electrónico</label>
+                <input type="email" id="mod-email" placeholder="mod@tobygames.com" required />
+              </div>
+              <div class="form-group">
+                <label>Contraseña asignada</label>
+                <input type="password" id="mod-pass" placeholder="Contraseña segura" required />
+              </div>
+              <button type="submit" class="btn btn-accent">Crear Cuenta de Moderador</button>
+            </form>
+          </div>
+        </div>
+
+        <!-- Gestión de Catálogo Existente -->
+        <div class="card-box" style="margin-bottom: 28px;">
+          <h3>📦 Juegos Publicados en la Tienda</h3>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Título</th>
+                  <th>Categoría</th>
+                  <th>Precio</th>
+                  <th>Acción</th>
+                </tr>
+              </thead>
+              <tbody id="admin-games-table"></tbody>
+            </table>
+          </div>
+        </div>
+
+                <!-- Historial de Compras de Saldo y Juegos (Admin y Moderadores) -->
+        <div class="card-box" style="margin-bottom: 28px;" id="staff-activity-box">
+          <h3>🧾 Historial de Compras de Saldo y Juegos (Admin y Mods)</h3>
+          <div class="search-bar" style="margin-bottom: 14px;">
+            <input type="text" id="activity-search-input" placeholder="🔍 Buscar por usuario, correo o juego..." oninput="renderAdminPanels()" />
+            <select id="activity-type-filter" style="max-width: 220px;" onchange="renderAdminPanels()">
+              <option value="all">Todos los movimientos</option>
+              <option value="balance_topup">Recargas de Saldo</option>
+              <option value="game_purchase">Compras de Juegos</option>
+            </select>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Fecha</th>
+                  <th>Usuario</th>
+                  <th>Tipo</th>
+                  <th>Detalle / Juego</th>
+                  <th>Monto</th>
+                  <th>Saldo Final</th>
+                </tr>
+              </thead>
+              <tbody id="admin-activity-table"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Gestión de Usuarios (Solo Admin Principal) -->
+        <div class="card-box" id="admin-only-users-table">
+          <h3>👥 Gestión de Usuarios y Roles</h3>
+          <div class="search-bar" style="margin-bottom: 14px;">
+            <input type="text" id="user-search-input" placeholder="🔍 Buscar usuario por nombre o correo..." oninput="renderAdminPanels()" />
+            <select id="user-role-filter" style="max-width: 210px;" onchange="renderAdminPanels()">
+              <option value="all">Todos los roles</option>
+              <option value="mod">Solo Moderadores</option>
+              <option value="user">Usuarios normales</option>
+              <option value="admin">Admin Principal</option>
+            </select>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Usuario</th>
+                  <th>Correo</th>
+                  <th>Rol</th>
+                  <th>Saldo</th>
+                  <th>Giros</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="admin-users-table"></tbody>
+            </table>
+          </div>
+        </div>
+      </main>
+
+      <footer class="support-footer">
+        <span>🎮 <strong>Tobygames</strong> — Soporte y consultas: <a href="mailto:tobygames489@gmail.com">tobygames489@gmail.com</a></span>
+        <span>¿Problemas con tu cuenta o pagos? Escríbenos directamente a <a href="mailto:tobygames489@gmail.com">tobygames489@gmail.com</a></span>
+      </footer>
+    </div>
+  </section>
+
+  <!-- Ventana emergente para cambiar contraseña -->
+  <div id="password-modal" class="modal-backdrop hidden">
+    <div class="modal-card">
+      <h3>🔒 Cambiar Contraseña</h3>
+      <form onsubmit="handleChangePassword(event)">
+        <div class="form-group">
+          <label>Contraseña actual</label>
+          <input type="password" id="curr-pass-input" placeholder="Tu contraseña actual" required />
+        </div>
+        <div class="form-group">
+          <label>Nueva contraseña</label>
+          <input type="password" id="new-pass-input" placeholder="Mínimo 4 caracteres" minlength="4" required />
+        </div>
+        <div class="form-group">
+          <label>Repite la nueva contraseña</label>
+          <input type="password" id="confirm-pass-input" placeholder="Escribe la nueva contraseña otra vez" minlength="4" required />
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-outline" onclick="closePasswordModal()">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Confirmar Cambio</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+    <!-- Ventana emergente para recargar saldo con PayPal -->
+  <div id="paypal-modal" class="modal-backdrop hidden">
+    <div class="modal-card">
+      <h3>💳 Recargar Saldo con PayPal</h3>
+      <p style="color: var(--text-muted); font-size: 0.86rem; margin-bottom: 14px;">
+        Elige el monto en USD y abre la recarga en PayPal. Al completar el pago se acredita el saldo en la tienda y, al comprar en el catálogo, se descuenta de tu moneda de la tienda.
+      </p>
+      <div class="form-group">
+        <label>Montos rápidos ($ USD)</label>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <button type="button" class="btn btn-outline btn-sm" onclick="selectPaypalAmount(1.00)">$1.00</button>
+          <button type="button" class="btn btn-outline btn-sm" onclick="selectPaypalAmount(3.00)">$3.00</button>
+          <button type="button" class="btn btn-outline btn-sm" onclick="selectPaypalAmount(5.00)">$5.00</button>
+          <button type="button" class="btn btn-outline btn-sm" onclick="selectPaypalAmount(10.00)">$10.00</button>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Monto a recargar ($ USD)</label>
+        <input type="number" id="paypal-amount-input" value="5.00" min="0.50" step="0.50" oninput="refreshPaypalCheckout()" />
+      </div>
+      <div id="paypal-button-container" style="margin: 14px 0;"></div>
+      <div id="paypal-fallback-box" style="margin: 14px 0; display: flex; flex-direction: column; gap: 10px;">
+        <a id="paypal-external-link" href="https://www.paypal.com/paypalme/" target="_blank" rel="noopener noreferrer" class="btn btn-primary" style="width: 100%; text-decoration: none;" onclick="markPaypalRedirectStarted()">
+          🌐 Ir a PayPal para Recargar ($5.00 USD)
+        </a>
+        <button type="button" id="paypal-confirm-btn" class="btn btn-accent" style="width: 100%;" onclick="confirmPaypalDeposit()">
+          ✅ Confirmar Recarga Acreditada ($5.00 USD)
+        </button>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-outline" onclick="closePaypalModal()">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+    <!-- Ventana emergente de comentarios por juego -->
+  <div id="comments-modal" class="modal-backdrop hidden">
+    <div class="modal-card" style="max-width: 500px;">
+      <h3 id="comments-modal-title">💬 Comentarios del Juego</h3>
+      <p id="comments-modal-subtitle" style="color: var(--text-muted); font-size: 0.84rem; margin-bottom: 12px;"></p>
+      <div id="comments-list" class="comments-list"></div>
+      <form id="comment-form" onsubmit="submitGameComment(event)">
+        <div class="form-group" style="margin-bottom: 10px;">
+          <label>Escribe un comentario o reseña</label>
+          <textarea id="comment-input" rows="2" placeholder="Comparte tu opinión sobre este juego o app..." required></textarea>
+        </div>
+        <div class="modal-actions" style="margin-top: 10px;">
+          <button type="button" class="btn btn-outline" onclick="closeCommentsModal()">Cerrar</button>
+          <button type="submit" class="btn btn-primary">Publicar Comentario</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Ventana emergente para verificar código enviado a Gmail (Registro) -->
+  <div id="verify-gmail-modal" class="modal-backdrop hidden">
+    <div class="modal-card">
+      <h3>✉️ Verificar Cuenta de Gmail</h3>
+      <p id="verify-gmail-subtitle" style="color: var(--text-muted); font-size: 0.86rem; margin-bottom: 14px; line-height: 1.45;">
+        Enviamos un código de 6 dígitos a tu correo para confirmar que existe y es tuyo.
+      </p>
+      <div id="verify-gmail-preview-box" class="hidden" style="background: var(--bg-dark); border: 1px dashed var(--accent); border-radius: 10px; padding: 10px 12px; margin-bottom: 14px; font-size: 0.82rem; color: var(--text-muted);">
+        Modo prueba local/sin servidor de correo — Código generado: <strong id="verify-gmail-preview-code" style="color: var(--accent); font-size: 1rem; letter-spacing: 2px;"></strong>
+      </div>
+      <form onsubmit="confirmRegisterOtp(event)">
+        <div class="form-group">
+          <label>Código de 6 dígitos</label>
+          <input type="text" id="register-otp-input" maxlength="6" pattern="[0-9]{6}" placeholder="Ej: 482910" required />
+        </div>
+        <div class="modal-actions" style="justify-content: space-between; align-items: center;">
+          <button type="button" class="btn btn-outline btn-sm" onclick="resendRegisterOtp()">Reenviar código</button>
+          <div style="display: flex; gap: 8px;">
+            <button type="button" class="btn btn-outline" onclick="closeVerifyGmailModal()">Cancelar</button>
+            <button type="submit" class="btn btn-primary">Verificar y Crear</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Ventana emergente para recuperar contraseña por Gmail -->
+  <div id="forgot-password-modal" class="modal-backdrop hidden">
+    <div class="modal-card">
+      <h3>🔑 Recuperar Contraseña por Gmail</h3>
+      <div id="reset-step-email">
+        <p style="color: var(--text-muted); font-size: 0.86rem; margin-bottom: 14px; line-height: 1.45;">
+          Ingresa tu correo <strong>@gmail.com</strong> registrado. Te enviaremos un código de verificación para cambiar tu contraseña.
+        </p>
+        <form onsubmit="requestPasswordResetOtp(event)">
+          <div class="form-group">
+            <label>Correo electrónico registrado</label>
+            <input type="email" id="reset-email-input" placeholder="tunombre@gmail.com" required />
+          </div>
+          <div class="modal-actions">
+            <button type="button" class="btn btn-outline" onclick="closeForgotPasswordModal()">Cancelar</button>
+            <button type="submit" class="btn btn-primary">Enviar Código a Gmail</button>
+          </div>
+        </form>
+      </div>
+
+      <div id="reset-step-code" class="hidden">
+        <p id="reset-code-subtitle" style="color: var(--text-muted); font-size: 0.86rem; margin-bottom: 14px; line-height: 1.45;">
+          Ingresa el código de 6 dígitos enviado a tu Gmail y define tu nueva contraseña.
+        </p>
+        <div id="reset-code-preview-box" class="hidden" style="background: var(--bg-dark); border: 1px dashed var(--accent); border-radius: 10px; padding: 10px 12px; margin-bottom: 14px; font-size: 0.82rem; color: var(--text-muted);">
+          Modo prueba local/sin servidor de correo — Código generado: <strong id="reset-code-preview-code" style="color: var(--accent); font-size: 1rem; letter-spacing: 2px;"></strong>
+        </div>
+        <form onsubmit="confirmPasswordResetOtp(event)">
+          <div class="form-group">
+            <label>Código de 6 dígitos</label>
+            <input type="text" id="reset-otp-input" maxlength="6" pattern="[0-9]{6}" placeholder="Ej: 193847" required />
+          </div>
+          <div class="form-group">
+            <label>Nueva contraseña</label>
+            <input type="password" id="reset-new-pass" minlength="4" placeholder="Mínimo 4 caracteres" required />
+          </div>
+          <div class="form-group">
+            <label>Confirmar nueva contraseña</label>
+            <input type="password" id="reset-confirm-pass" minlength="4" placeholder="Repite la nueva contraseña" required />
+          </div>
+          <div class="modal-actions">
+            <button type="button" class="btn btn-outline" onclick="backToResetEmailStep()">Cambiar correo</button>
+            <button type="submit" class="btn btn-primary">Guardar Nueva Clave</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="app.js"></script>
+</body>
+</html>
